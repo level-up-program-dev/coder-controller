@@ -4,7 +4,7 @@ clean:
 # Create shared directories
 setup:
 	mkdir -p levelup/docker-volumes
-	mkdir -p levelup/.m2
+	mkdir -p levelup/.m2/repository
 
 # Create docker compose - set NUM_TEAMS equal to the number of container to generate
 compose: setup
