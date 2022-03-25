@@ -43,6 +43,15 @@ for i in range(numTeams):
     team_settings_dict = json.loads(settings_str)
     docker_settings_all_teams[teamName] = team_settings_dict
 
+# Add portainer as a supervisor
+portainer = {'image': 'portainer/portainer-ce:latest', 'container_name': 'portainer',
+    'restart': 'unless-stopped', 'security_opt': ['no-new-privileges:true'], 
+    'volumes': ['/etc/localtime:/etc/localtime:ro','/var/run/docker.sock:/var/run/docker.sock:ro', './portainer-data:/data'],
+    'ports' : ['9000:9000']
+    }
+
+docker_settings_all_teams['portainer'] = portainer
+
 docker_settings = {'services': docker_settings_all_teams}
 
 with open(r'docker-compose.yml', 'a') as file:

@@ -1,3 +1,5 @@
+# Requires 
+docker desktop, and docker compose
 # Setup and start/stop for coder instances for teams
 Make file contains necessary commands
 All directories for volume mounts will be created in the directory you execute in
