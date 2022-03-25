@@ -12,8 +12,7 @@ if len(sys.argv) == 2:
 else:
     numTeams = 1
 
-# TODO: Add a mount for a volume to their ~/home
-docker_settings_team = {'build': '.', 'ports': ['&PORT1:9000', '&PORT2:9001', '&PORT3:9002'], 'volumes': ['&TEAM_PATH:/config', m2path+':/root/.m2'], 'image': 'ghcr.io/jpwhite3/polyglot-code-server:latest', 'working_dir': '/config/workspace'}
+docker_settings_team = {'build': '.', 'ports': ['&PORT1:9000', '&PORT2:9001', '&PORT3:9002'], 'volumes': ['&TEAM_PATH:/config', '&TEAM_HOME:/root', m2path+':/root/.m2'], 'image': 'ghcr.io/jpwhite3/polyglot-code-server:latest', 'working_dir': '/config/workspace'}
 docker_settings_all_teams = {}
 
 
@@ -27,13 +26,17 @@ for i in range(numTeams):
     teamName = 'Team' + str(i+1)
     #create volume folder for team
     path = volumePath + teamName + "/workspace"
+    pathHome = volumePath + teamName + "_home"
     if not os.path.exists(path):
         os.makedirs(path)
+    if not os.path.exists(pathHome):
+        os.makedirs(pathHome)
 
     port_base_1 = 9000 + i + 1
     port_base_2 = 10000 + i + 1
     port_base_3 = 11000 + i + 1
     settings_str = settings_str.replace("&TEAM_PATH", path)
+    settings_str = settings_str.replace("&TEAM_HOME", pathHome)
     settings_str = settings_str.replace("&PORT1", str(port_base_1))
     settings_str = settings_str.replace("&PORT2", str(port_base_2))
     settings_str = settings_str.replace("&PORT3", str(port_base_3))
