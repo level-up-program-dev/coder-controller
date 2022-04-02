@@ -1,6 +1,7 @@
 # Requires 
 docker desktop, and docker compose, python3, pyyaml  
 docker pull ghcr.io/jpwhite3/polyglot-code-server:latest
+
 # Setup and start/stop for coder instances for teams
 Make file contains necessary commands
 All directories for volume mounts will be created in the directory you execute in
