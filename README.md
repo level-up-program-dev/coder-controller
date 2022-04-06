@@ -1,9 +1,10 @@
 # Requires 
-docker desktop, and docker compose; Linux OS
+docker desktop, docker compose, python3, pyyaml, Linux OS
+docker pull ghcr.io/jpwhite3/polyglot-code-server:latest
+
 # Setup and start/stop for coder instances for teams
 Make file contains necessary commands
 All directories for volume mounts will be created in the directory you execute in
-Extra goal added for setting up an EC2 instance to run this
 
 ## Create and start coder containers
 
@@ -18,6 +19,9 @@ will stop all running coder containers
 * make clean 
 
 will remove team-specific folders, but keep persistent volumes like .m2
+
+* make bootstrap_ec2  
+Will setup EC2 instance to be able to run it
 
 ## PORTS to connect
 Each team gets 3 ports  
