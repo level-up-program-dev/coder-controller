@@ -5,8 +5,9 @@ clean:
 # Setup for ec2 - assumes sudo bash with yum install docker git already run
 bootstrap_ec2:
 	service docker start
-	python3 -m pip install docker-compose
-	echo 'export PATH=$$PATH:/bin:/bin/docker-compose:/usr/local/bin' >> ~/.bashrc
+	curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
+	chmod +x /usr/local/bin/docker-compose
+	ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 
 # Create shared directories
 bootstrap:
