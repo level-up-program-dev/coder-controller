@@ -6,7 +6,7 @@ clean:
 bootstrap_ec2:
 	service docker start
 	python3 -m pip install docker-compose
-	export PATH=$PATH:/bin:/bin/docker-compose
+	echo 'export PATH=$$PATH:/bin:/bin/docker-compose:/usr/local/bin' >> ~/.bashrc
 
 # Create shared directories
 bootstrap:
