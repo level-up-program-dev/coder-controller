@@ -1,8 +1,9 @@
 # Requires 
-docker desktop, and docker compose
+docker desktop, and docker compose; Linux OS
 # Setup and start/stop for coder instances for teams
 Make file contains necessary commands
 All directories for volume mounts will be created in the directory you execute in
+Extra goal added for setting up an EC2 instance to run this
 
 ## Create and start coder containers
 
