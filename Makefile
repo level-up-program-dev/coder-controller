@@ -2,8 +2,14 @@
 clean:
 	rm -r levelup/docker-volumes
 
+infrastructure:
+	aws cloudformation create-stack --stack-name coder-stack-1 --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=NumTeams,ParameterValue=2 ParameterKey=InstanceType,ParameterValue=t2.micro > stack-id.json
+
+infrastructure-delete:
+	aws cloudformation delete-stack --stack-name coder-stack-1
+
 # Setup for ec2 - assumes sudo bash with yum install docker git already run
-bootstrap_ec2:
+bootstrap-ec2:
 	service docker start
 	curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
 	chmod +x /usr/local/bin/docker-compose
