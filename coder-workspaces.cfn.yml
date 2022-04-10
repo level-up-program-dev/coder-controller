@@ -3,9 +3,7 @@ Description: >-
   AWS CloudFormation Template Coder Host: Creates a Coder stack using a single
   EC2 instance running docker. This template uses the AWS CloudFormation
   bootstrap scripts to install the packages and files necessary to deploy
-  docker, Git and Coder at instance launch time. **WARNING** This template
-  creates an Amazon EC2 instance. You will be billed for the AWS resources used
-  if you create a stack from this template.
+  docker, Git and Coder at instance launch time.
 Parameters:
   NumTeams:
     Description: Number of teams

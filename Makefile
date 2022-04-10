@@ -3,10 +3,13 @@ clean:
 	rm -r levelup/docker-volumes
 
 infrastructure:
-	aws cloudformation create-stack --stack-name coder-stack-1 --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=NumTeams,ParameterValue=2 ParameterKey=InstanceType,ParameterValue=t2.micro > stack-id.json
+	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=NumTeams,ParameterValue=4 ParameterKey=InstanceType,ParameterValue=t2.micro > stack-id.json
+
+infrastructure-list:
+	aws cloudformation describe-stacks --stack-name coder-stack
 
 infrastructure-delete:
-	aws cloudformation delete-stack --stack-name coder-stack-1
+	aws cloudformation delete-stack --stack-name coder-stack
 
 # Setup for ec2 - assumes sudo bash with yum install docker git already run
 bootstrap-ec2:
