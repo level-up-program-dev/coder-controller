@@ -2,3 +2,4 @@ docker-compose.yml
 /levelup
 .DS_Store
 /portainer-data
+stack-id.json

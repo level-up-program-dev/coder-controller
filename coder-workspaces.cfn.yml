@@ -10,33 +10,36 @@ Parameters:
     Type: Number
     MinValue: '1'
     MaxValue: '10'
+    Default: '6'
+    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
+  VolumeSize:
+    Description: Size of EBS volume in GB
+    Type: Number
+    Default: 50
     ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
   InstanceType:
     Description: Docker host EC2 instance type
     Type: String
-    Default: t3.small
+    Default: t3.2xlarge
     AllowedValues:
-      - t2.micro
-      - t3.nano
-      - t3.micro
-      - t3.small
-      - t3.medium
       - t3.large
       - t3.xlarge
       - t3.2xlarge
     ConstraintDescription: must be a valid EC2 instance type.
+  EbsAvailabilityZone:
+    Description: AZ for the EBS volume
+    Type: String
+    Default: us-east-1a
+    AllowedValues:
+      - us-east-1a
+      - us-east-1b
+      - us-east-1c
+      - us-west-1a
+      - us-west-1b
+      - us-west-1c
+    ConstraintDescription: must be a valid AZ in the region
 Mappings:
   AWSInstanceType2Arch:
-    t2.micro:
-      Arch: HVM64
-    t3.nano:
-      Arch: HVM64
-    t3.micro:
-      Arch: HVM64
-    t3.small:
-      Arch: HVM64
-    t3.medium:
-      Arch: HVM64
     t3.large:
       Arch: HVM64
     t3.xlarge:
@@ -44,14 +47,6 @@ Mappings:
     t3.2xlarge:
       Arch: HVM64
   AWSInstanceType2NATArch:
-    t3.nano:
-      Arch: NATHVM64
-    t3.micro:
-      Arch: NATHVM64
-    t3.small:
-      Arch: NATHVM64
-    t3.medium:
-      Arch: NATHVM64
     t3.large:
       Arch: NATHVM64
     t3.xlarge:
@@ -68,6 +63,13 @@ Mappings:
     us-west-2:
       HVM64: ami-00ee4df451840fa9d
 Resources:
+  WebServerEbsVolume:
+    Type: 'AWS::EC2::Volume'
+    Properties: 
+      AvailabilityZone: !Ref 'EbsAvailabilityZone'
+      Encrypted: true
+      Size: !Ref 'VolumeSize'
+      VolumeType: gp3
   WebServerInstance:
     Type: 'AWS::EC2::Instance'
     Metadata:
@@ -88,6 +90,7 @@ Resources:
                 - ''
                 - - |
                     #!/bin/bash -xe
+                  - sudo yum update -y
                   - git clone https://github.com/level-up-program/coder-controller.git
                   - cd /coder-controller
                   - make bootstrap-ec2 && make start NUM_TEAMS=
@@ -169,6 +172,11 @@ Resources:
       SecurityGroups:
         - !Ref WebServerSecurityGroup
       KeyName: coder-ec2-keypair
+      BlockDeviceMappings:
+      - DeviceName: "/dev/xvda"
+        Ebs:
+          VolumeSize: !Ref 'VolumeSize'
+          Encrypted: 'true'
       UserData: !Base64 
         'Fn::Join':
           - ''
