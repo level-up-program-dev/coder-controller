@@ -5,13 +5,6 @@ Description: >-
   bootstrap scripts to install the packages and files necessary to deploy
   docker, Git and Coder at instance launch time.
 Parameters:
-  NumTeams:
-    Description: Number of teams
-    Type: Number
-    MinValue: '1'
-    MaxValue: '10'
-    Default: '6'
-    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
   VolumeSize:
     Description: Size of EBS volume in GB
     Type: Number
@@ -27,20 +20,10 @@ Parameters:
       - t3.xlarge
       - t3.2xlarge
     ConstraintDescription: must be a valid EC2 instance type.
-  EbsAvailabilityZone:
-    Description: AZ for the EBS volume
-    Type: String
-    Default: us-east-1a
-    AllowedValues:
-      - us-east-1a
-      - us-east-1b
-      - us-east-1c
-      - us-west-1a
-      - us-west-1b
-      - us-west-1c
-    ConstraintDescription: must be a valid AZ in the region
 Mappings:
   AWSInstanceType2Arch:
+    t2.micro:
+      Arch: HVM64
     t3.large:
       Arch: HVM64
     t3.xlarge:
@@ -48,6 +31,8 @@ Mappings:
     t3.2xlarge:
       Arch: HVM64
   AWSInstanceType2NATArch:
+    t2.micro:
+      Arch: NATHVM64
     t3.large:
       Arch: NATHVM64
     t3.xlarge:
@@ -198,32 +183,35 @@ Resources:
           ToPort: '22'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: '80'
-          ToPort: '80'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
           FromPort: '443'
           ToPort: '443'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          FromPort: '8000'
+          ToPort: '8100'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
           FromPort: '9000'
-          ToPort: '12000'
+          ToPort: '9100'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '10000'
+          ToPort: '10100'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '11000'
+          ToPort: '11100'
           CidrIp: 0.0.0.0/0
   DNSRecord:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneName: jpw3.me.
-      Name: coder.jpw3.me.
+      Name: vscode.jpw3.me.
       Type: A
       TTL: '900'
       ResourceRecords:
       - !GetAtt WebServerInstance.PublicIp
 Outputs:
-  WebsiteURL:
-    Description: URL for newly created coder stack
-    Value: !Join 
-      - ''
-      - - 'http://'
-        - !GetAtt 
-          - WebServerInstance
-          - PublicDnsName
+  PublicDomainName:
+    Description: Domain name for newly created coder stack
+    Value: !GetAtt WebServerInstance.PublicDnsName
