@@ -64,13 +64,6 @@ Mappings:
     us-west-2:
       HVM64: ami-00ee4df451840fa9d
 Resources:
-  WebServerEbsVolume:
-    Type: 'AWS::EC2::Volume'
-    Properties: 
-      AvailabilityZone: !Ref 'EbsAvailabilityZone'
-      Encrypted: true
-      Size: !Ref 'VolumeSize'
-      VolumeType: gp3
   WebServerInstance:
     Type: 'AWS::EC2::Instance'
     Metadata:
@@ -145,7 +138,7 @@ Resources:
         Configure:
           commands:
             01_clone_coder_controller:
-              command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/level-up-program/coder-controller/main/install-ec2.sh)"
+              command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/level-up-program/coder-controller/develop/install-ec2.sh)"
               test: cd /coder-controller; (( $? != 0 ))
     Properties:
       ImageId: !FindInMap 
