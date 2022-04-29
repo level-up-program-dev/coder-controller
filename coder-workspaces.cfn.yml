@@ -22,6 +22,7 @@ Parameters:
     Type: String
     Default: t3.2xlarge
     AllowedValues:
+      - t2.micro
       - t3.large
       - t3.xlarge
       - t3.2xlarge
@@ -84,22 +85,8 @@ Resources:
               docker: []
               git: []
               curl: []
+              nss: []
           files:
-            /tmp/install.sh:
-              content: !Join 
-                - ''
-                - - |
-                    #!/bin/bash -xe
-                  - sudo yum update -y
-                  - git clone https://github.com/level-up-program/coder-controller.git
-                  - cd /coder-controller
-                  - make bootstrap-ec2 && make start NUM_TEAMS=
-                  - !Ref 'NumTeams'
-                  - |+
-
-              mode: '000755'
-              owner: root
-              group: root
             /etc/cfn/cfn-hup.conf:
               content: !Join 
                 - ''

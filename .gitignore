@@ -3,3 +3,4 @@ docker-compose.yml
 .DS_Store
 /portainer-data
 stack-id.json
+Caddyfile
