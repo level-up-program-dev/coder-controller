@@ -172,11 +172,11 @@ Resources:
 
     CreationPolicy:
       ResourceSignal:
-        Timeout: PT5M
+        Timeout: PT15M
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: 'Enable HTTP access via ports 22, 80, 443, 9000-12000'
+      GroupDescription: 'Enable access via ports 22, 443, 8000-11100'
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '22'

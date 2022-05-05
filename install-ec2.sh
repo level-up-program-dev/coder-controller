@@ -37,3 +37,5 @@ coder.jpw3.me:8006 {
     reverse_proxy localhost:9006
 }
 EOF
+
+caddy start
