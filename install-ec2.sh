@@ -38,4 +38,3 @@ coder.jpw3.me:8006 {
 }
 EOF
 
-caddy start
