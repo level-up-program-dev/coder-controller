@@ -5,13 +5,12 @@ cd /
 yum update -y
 yum install -y https://github.com/cli/cli/releases/download/v2.9.0/gh_2.9.0_linux_amd64.rpm
 
-yum install yum-plugin-copr
-yum copr enable @caddy/caddy
-yum install caddy
-
 git clone https://github.com/level-up-program/coder-controller.git
 cd /coder-controller
 make bootstrap-ec2
+
+wget https://github.com/caddyserver/caddy/releases/download/v2.5.0/caddy_2.5.0_linux_amd64.tar.gz
+tar -zxvf caddy_2.5.0_linux_amd64.tar.gz
 make start NUM_TEAMS=6
 
 cat <<EOF > Caddyfile

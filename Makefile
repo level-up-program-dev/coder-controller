@@ -3,7 +3,7 @@ clean:
 	rm -r levelup/docker-volumes
 
 infrastructure:
-	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t3.2xlarge > stack-id.json
+	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t2.micro > stack-id.json
 
 infrastructure-list:
 	aws cloudformation describe-stacks --stack-name coder-stack

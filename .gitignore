@@ -4,3 +4,4 @@ docker-compose.yml
 /portainer-data
 stack-id.json
 Caddyfile
+.vscode
