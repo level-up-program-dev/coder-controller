@@ -206,7 +206,7 @@ Resources:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneName: jpw3.me.
-      Name: vscode.jpw3.me.
+      Name: coder.jpw3.me.
       Type: A
       TTL: '900'
       ResourceRecords:
