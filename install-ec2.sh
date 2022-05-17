@@ -11,7 +11,19 @@ make bootstrap-ec2
 
 wget https://github.com/caddyserver/caddy/releases/download/v2.5.0/caddy_2.5.0_linux_amd64.tar.gz
 tar -zxvf caddy_2.5.0_linux_amd64.tar.gz
-make start NUM_TEAMS=6
+mv caddy /usr/bin/
+
+sudo groupadd --system caddy
+useradd --system \
+    --gid caddy \
+    --create-home \
+    --home-dir /var/lib/caddy \
+    --shell /usr/sbin/nologin \
+    --comment "Caddy web server" \
+    caddy
+wget https://raw.githubusercontent.com/caddyserver/dist/master/init/caddy.service
+mv caddy.service /etc/systemd/system/caddy.service
+chmod +r /etc/systemd/system/caddy.service
 
 cat <<EOF > Caddyfile
 coder.jpw3.me {
@@ -37,3 +49,8 @@ coder.jpw3.me:8006 {
 }
 EOF
 
+mkdir -p /etc/caddy
+mv Caddyfile /etc/caddy/Caddyfile
+make start NUM_TEAMS=6
+systemctl daemon-reload
+systemctl enable --now caddy
