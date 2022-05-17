@@ -15,7 +15,7 @@ make start NUM_TEAMS=6
 
 cat <<EOF > Caddyfile
 coder.jpw3.me {
-	reverse_proxy /admin/* localhost:9000
+	reverse_proxy localhost:9000
 }
 coder.jpw3.me:8001 {
     reverse_proxy localhost:9001

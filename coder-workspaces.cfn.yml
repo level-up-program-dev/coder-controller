@@ -123,7 +123,7 @@ Resources:
         Configure:
           commands:
             01_clone_coder_controller:
-              command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/level-up-program/coder-controller/develop/install-ec2.sh)"
+              command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/level-up-program/coder-controller/main/install-ec2.sh)"
               test: cd /coder-controller; (( $? != 0 ))
     Properties:
       ImageId: !FindInMap 
