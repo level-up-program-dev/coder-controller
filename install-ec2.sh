@@ -51,8 +51,10 @@ EOF
 
 mkdir -p /etc/caddy
 mv Caddyfile /etc/caddy/Caddyfile
+
 make start NUM_TEAMS=6
+
 systemctl daemon-reload
+systemctl enable --now docker.service
+systemctl enable --now containerd.service
 systemctl enable --now caddy
-systemctl enable docker.service
-systemctl enable containerd.service
