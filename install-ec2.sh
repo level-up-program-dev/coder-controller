@@ -52,7 +52,7 @@ EOF
 mkdir -p /etc/caddy
 mv Caddyfile /etc/caddy/Caddyfile
 
-make start NUM_TEAMS=6
+make start NUM_TEAMS=4
 
 systemctl daemon-reload
 systemctl enable --now docker.service
