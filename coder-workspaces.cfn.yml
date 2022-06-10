@@ -13,7 +13,7 @@ Parameters:
   InstanceType:
     Description: Docker host EC2 instance type
     Type: String
-    Default: t3.2xlarge
+    Default: t3.xlarge
     AllowedValues:
       - t2.micro
       - t3.large
