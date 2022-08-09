@@ -14,7 +14,7 @@ infrastructure-delete:
 # Setup for ec2 - assumes sudo bash with yum install docker git already run
 bootstrap-ec2:
 	service docker start
-	curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
+	curl -L "https://github.com/docker/compose/releases/download/v2.9.0/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
 	chmod +x /usr/local/bin/docker-compose
 	ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 

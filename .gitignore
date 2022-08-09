@@ -5,3 +5,4 @@ docker-compose.yml
 stack-id.json
 Caddyfile
 .vscode
+.dccache

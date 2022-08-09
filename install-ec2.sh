@@ -3,14 +3,14 @@
 cd /
 
 yum update -y
-yum install -y https://github.com/cli/cli/releases/download/v2.9.0/gh_2.9.0_linux_amd64.rpm
+yum install -y https://github.com/cli/cli/releases/download/v2.14.3/gh_2.14.3_linux_amd64.rpm
 
 git clone https://github.com/level-up-program/coder-controller.git
 cd /coder-controller
 make bootstrap-ec2
 
-wget https://github.com/caddyserver/caddy/releases/download/v2.5.0/caddy_2.5.0_linux_amd64.tar.gz
-tar -zxvf caddy_2.5.0_linux_amd64.tar.gz
+wget https://github.com/caddyserver/caddy/releases/download/v2.5.2/caddy_2.5.2_linux_amd64.tar.gz
+tar -zxvf caddy_2.5.2_linux_amd64.tar.gz
 mv caddy /usr/bin/
 
 sudo groupadd --system caddy
@@ -52,7 +52,7 @@ EOF
 mkdir -p /etc/caddy
 mv Caddyfile /etc/caddy/Caddyfile
 
-make start NUM_TEAMS=4
+make start NUM_TEAMS=6
 
 systemctl daemon-reload
 systemctl enable --now docker.service
