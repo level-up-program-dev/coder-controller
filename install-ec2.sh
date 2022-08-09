@@ -21,13 +21,10 @@ useradd --system \
     --shell /usr/sbin/nologin \
     --comment "Caddy web server" \
     caddy
-wget https://raw.githubusercontent.com/caddyserver/dist/master/init/caddy.service
-mv caddy.service /etc/systemd/system/caddy.service
-chmod +r /etc/systemd/system/caddy.service
 
 cat <<EOF > Caddyfile
 coder.jpw3.me {
-	reverse_proxy localhost:9000
+    reverse_proxy localhost:9000
 }
 coder.jpw3.me:8001 {
     reverse_proxy localhost:9001
@@ -53,8 +50,4 @@ mkdir -p /etc/caddy
 mv Caddyfile /etc/caddy/Caddyfile
 
 make start NUM_TEAMS=6
-
-systemctl daemon-reload
-systemctl enable --now docker.service
-systemctl enable --now containerd.service
-systemctl enable --now caddy
+caddy start -config /etc/caddy/Caddyfile
