@@ -13,7 +13,7 @@ Parameters:
   InstanceType:
     Description: Docker host EC2 instance type
     Type: String
-    Default: t3.xlarge
+    Default: t3.2xlarge
     AllowedValues:
       - t2.micro
       - t3.large
@@ -206,7 +206,7 @@ Resources:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneName: jpw3.me.
-      Name: coder.jpw3.me.
+      Name: coder2.jpw3.me.
       Type: A
       TTL: '900'
       ResourceRecords:

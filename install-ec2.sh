@@ -23,25 +23,25 @@ useradd --system \
     caddy
 
 cat <<EOF > Caddyfile
-coder.jpw3.me {
+coder2.jpw3.me {
     reverse_proxy localhost:9000
 }
-coder.jpw3.me:8001 {
+coder2.jpw3.me:8001 {
     reverse_proxy localhost:9001
 }
-coder.jpw3.me:8002 {
+coder2.jpw3.me:8002 {
     reverse_proxy localhost:9002
 }
-coder.jpw3.me:8003 {
+coder2.jpw3.me:8003 {
     reverse_proxy localhost:9003
 }
-coder.jpw3.me:8004 {
+coder2.jpw3.me:8004 {
     reverse_proxy localhost:9004
 }
-coder.jpw3.me:8005 {
+coder2.jpw3.me:8005 {
     reverse_proxy localhost:9005
 }
-coder.jpw3.me:8006 {
+coder2.jpw3.me:8006 {
     reverse_proxy localhost:9006
 }
 EOF
@@ -49,5 +49,5 @@ EOF
 mkdir -p /etc/caddy
 mv Caddyfile /etc/caddy/Caddyfile
 
-make start NUM_TEAMS=6
-caddy start -config /etc/caddy/Caddyfile
+caddy start -config /etc/caddy/Caddyfile &
+exit 0
