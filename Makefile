@@ -2,36 +2,27 @@
 clean:
 	rm -r levelup/docker-volumes
 
-infrastructure:
-	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t3.2xlarge > stack-id.json
+env:
+	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t3.xlarge > stack-id.json
 
-infrastructure-list:
+env-test:
+	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t2.micro ParameterKey=EnvironmentCount,ParameterValue=1 > test-stack-id.json
+
+env-list:
 	aws cloudformation describe-stacks --stack-name coder-stack
 
-infrastructure-delete:
+env-delete:
 	aws cloudformation delete-stack --stack-name coder-stack
 
-# Setup for ec2 - assumes sudo bash with yum install docker git already run
-bootstrap-ec2:
-	service docker start
-	curl -L "https://github.com/docker/compose/releases/download/v2.9.0/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
-	chmod +x /usr/local/bin/docker-compose
-	ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-
-# Create shared directories
 bootstrap:
-	mkdir -p levelup/docker-volumes
-	mkdir -p levelup/.m2/repository
-	python3 -m pip install pyyaml
 	python3 -m pip install docker-compose
+
+# set CODER_INSTANCE_COUNT= to the number of container to generate
+compose:
 	docker pull ghcr.io/jpwhite3/polyglot-code-server:latest
+	python3 composer.py -n $(CODER_INSTANCE_COUNT)
 
-# Create docker compose - set NUM_TEAMS equal to the number of container to generate
-compose: bootstrap
-	python3 docker-compose-composer.py $(NUM_TEAMS)
-
-# example: make start NUM_TEAMS = 3 
-start: compose
+start:
 	docker-compose up -d --remove-orphans
 
 stop:

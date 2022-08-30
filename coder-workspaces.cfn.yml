@@ -9,17 +9,27 @@ Parameters:
     Description: Size of EBS volume in GB
     Type: Number
     Default: 50
-    ConstraintDescription: must begin with a letter and contain only alphanumeric characters.
   InstanceType:
     Description: Docker host EC2 instance type
     Type: String
-    Default: t3.2xlarge
+    Default: t3.xlarge
     AllowedValues:
       - t2.micro
       - t3.large
       - t3.xlarge
       - t3.2xlarge
     ConstraintDescription: must be a valid EC2 instance type.
+  EnvironmentCount:
+    Description: Number of coder environments to create
+    Type: Number
+    Default: 8
+    MaxValue: 8
+    MinValue: 1
+    ConstraintDescription: number between 1 - 8
+  SubDomainName:
+    Description: Subdomain name to create
+    Type: String
+    Default: coder
 Mappings:
   AWSInstanceType2Arch:
     t2.micro:
@@ -54,16 +64,21 @@ Resources:
     Metadata:
       'AWS::CloudFormation::Init':
         configSets:
-          InstallAndRun:
-            - Install
-            - Configure
-        Install:
-          packages:
-            yum:
-              docker: []
-              git: []
-              curl: []
-              nss: []
+          Bootstrap:
+            - AWSSetup
+            - InstallDeps
+          Configure:
+            - 
+              ConfigSet: "Bootstrap"
+            - "InstallCaddy"
+          Start:
+            - 
+              ConfigSet: "Configure"
+            - "StartApplication"
+          default:
+            - 
+              ConfigSet: "Start"
+        AWSSetup:
           files:
             /etc/cfn/cfn-hup.conf:
               content: !Join 
@@ -96,7 +111,7 @@ Resources:
                   - '         --stack '
                   - !Ref 'AWS::StackName'
                   - '         --resource WebServerInstance '
-                  - '         --configsets InstallAndRun '
+                  - '         --configsets default '
                   - '         --region '
                   - !Ref 'AWS::Region'
                   - |+
@@ -106,12 +121,12 @@ Resources:
               mode: '000400'
               owner: root
               group: root
+          commands:
+            update:
+              command: "yum update -y"
           services:
             sysvinit:
               amazon-ssm-agent:
-                enabled: 'true'
-                ensureRunning: 'true'
-              docker:
                 enabled: 'true'
                 ensureRunning: 'true'
               cfn-hup:
@@ -120,11 +135,79 @@ Resources:
                 files:
                   - /etc/cfn/cfn-hup.conf
                   - /etc/cfn/hooks.d/cfn-auto-reloader.conf
-        Configure:
+        InstallDeps:
+          packages:
+            yum:
+              docker: []
+              git: []
+              curl: []
+              nss: []
+          sources:
+            /opt/coder: https://github.com/level-up-program/coder-controller/archive/refs/heads/main.zip
+            /opt/caddy: https://github.com/caddyserver/caddy/releases/download/v2.5.2/caddy_2.5.2_linux_amd64.tar.gz
           commands:
-            01_clone_coder_controller:
-              command: sh -c "$(curl -fsSL https://raw.githubusercontent.com/level-up-program/coder-controller/main/install-ec2.sh)"
-              test: cd /coder-controller; (( $? != 0 ))
+            docker-compose-step1:
+              command: "curl -L \"https://github.com/docker/compose/releases/download/v2.9.0/docker-compose-linux-x86_64\" -o /usr/local/bin/docker-compose"
+              test: "test -e /usr/local/bin/docker-compose"
+            docker-compose-step2:
+              command: "chmod +x /usr/local/bin/docker-compose"
+              test: "test -x /usr/local/bin/docker-compose"
+            docker-compose-step3:
+              command: "ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
+              test: "test -h /usr/bin/docker-compose"
+          services:
+            sysvinit:
+              docker:
+                enabled: 'true'
+                ensureRunning: 'true'
+        InstallCaddy:
+          packages:
+            rpm:
+              gh: https://github.com/cli/cli/releases/download/v2.14.7/gh_2.14.7_linux_amd64.rpm
+          users:
+            caddy:
+              homeDir: /var/lib/caddy
+          files:
+            /etc/caddy/Caddyfile:
+              content: !Sub |
+                ${SubDomainName}.jpw3.me:8000 { reverse_proxy localhost:9000 }
+                ${SubDomainName}.jpw3.me:8001 { reverse_proxy localhost:9001 }
+                ${SubDomainName}.jpw3.me:8002 { reverse_proxy localhost:9002 }
+                ${SubDomainName}.jpw3.me:8003 { reverse_proxy localhost:9003 }
+                ${SubDomainName}.jpw3.me:8004 { reverse_proxy localhost:9004 }
+                ${SubDomainName}.jpw3.me:8005 { reverse_proxy localhost:9005 }
+                ${SubDomainName}.jpw3.me:8006 { reverse_proxy localhost:9006 }
+                ${SubDomainName}.jpw3.me:8007 { reverse_proxy localhost:9007 }
+                ${SubDomainName}.jpw3.me:8008 { reverse_proxy localhost:9008 }
+              mode: '000644'
+              owner: root
+              group: root
+            /etc/systemd/system/caddy.service:
+              source: https://raw.githubusercontent.com/caddyserver/dist/master/init/caddy.service
+              mode: '000644'
+              owner: root
+              group: root
+          commands:
+            install:
+              command: "cp caddy /usr/bin/"
+              cwd: "/opt/caddy"
+              test: "test -e /usr/bin/caddy"
+        StartApplication:
+          commands:
+            build:
+              command: "make compose"
+              env:
+                CODER_INSTANCE_COUNT: !Ref EnvironmentCount
+              cwd: "/opt/coder/coder-controller-main"
+              test: "test -e /opt/coder/coder-controller-main/docker-compose.json"
+            start:
+              command: "make start"
+              cwd: "/opt/coder/coder-controller-main"
+          services:
+            sysvinit:
+              caddy:
+                enabled: 'true'
+                ensureRunning: 'true'
     Properties:
       ImageId: !FindInMap 
         - AWSRegionArch2AMI
@@ -155,7 +238,7 @@ Resources:
             - '         --stack '
             - !Ref 'AWS::StackName'
             - '         --resource WebServerInstance '
-            - '         --configsets InstallAndRun '
+            - '         --configsets default '
             - '         --region '
             - !Ref 'AWS::Region'
             - |+
@@ -172,11 +255,11 @@ Resources:
 
     CreationPolicy:
       ResourceSignal:
-        Timeout: PT15M
+        Timeout: PT55M
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      GroupDescription: 'Enable access via ports 22, 443, 8000-11100'
+      GroupDescription: 'Enable access via ports 22, 443, 8000-9100'
       SecurityGroupIngress:
         - IpProtocol: tcp
           FromPort: '22'
@@ -194,19 +277,11 @@ Resources:
           FromPort: '9000'
           ToPort: '9100'
           CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '10000'
-          ToPort: '10100'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '11000'
-          ToPort: '11100'
-          CidrIp: 0.0.0.0/0
   DNSRecord:
     Type: AWS::Route53::RecordSet
     Properties:
       HostedZoneName: jpw3.me.
-      Name: coder2.jpw3.me.
+      Name: !Sub ${SubDomainName}.jpw3.me.
       Type: A
       TTL: '900'
       ResourceRecords:
