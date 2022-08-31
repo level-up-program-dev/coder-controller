@@ -18,6 +18,13 @@ compose:
 	docker pull ghcr.io/jpwhite3/polyglot-code-server:latest
 	python3 composer.py -n $(CODER_INSTANCE_COUNT)
 
+# set TEAM_REPO to the git url for the code to clone
+clone:
+	for team in $(CODER_INSTANCE_COUNT) ; do \
+		cd ./volumes/coder-instance-$$team ; \
+		git clone $(TEAM_REPO) \
+	done
+
 start:
 	docker-compose -f docker-compose.json up -d --remove-orphans
 
