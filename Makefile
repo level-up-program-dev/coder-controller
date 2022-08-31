@@ -6,7 +6,7 @@ env:
 	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t3.xlarge > stack-id.json
 
 env-test:
-	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t2.micro ParameterKey=EnvironmentCount,ParameterValue=1 > test-stack-id.json
+	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t2.micro ParameterKey=EnvironmentCount,ParameterValue=2 > test-stack-id.json
 
 env-list:
 	aws cloudformation describe-stacks --stack-name coder-stack
@@ -23,7 +23,7 @@ compose:
 	python3 composer.py -n $(CODER_INSTANCE_COUNT)
 
 start:
-	docker-compose up -d --remove-orphans
+	docker-compose -f docker-compose.json up -d --remove-orphans
 
 stop:
-	docker-compose stop
+	docker-compose -f docker-compose.json stop
