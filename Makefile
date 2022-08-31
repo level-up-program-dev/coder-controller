@@ -1,7 +1,3 @@
-# Clean out team folders
-clean:
-	rm -r levelup/docker-volumes
-
 env:
 	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t3.xlarge > stack-id.json
 

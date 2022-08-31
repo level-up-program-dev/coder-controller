@@ -26,8 +26,8 @@ Parameters:
     MaxValue: 8
     MinValue: 1
     ConstraintDescription: number between 1 - 8
-  SubDomainName:
-    Description: Subdomain name to create
+  SubDomainPrefix:
+    Description: Subdomain prefix to use for DNS record
     Type: String
     Default: coder
 Mappings:
@@ -170,16 +170,42 @@ Resources:
           files:
             /etc/caddy/Caddyfile:
               content: !Sub |
-                ${SubDomainName}.jpw3.me:8000 { reverse_proxy localhost:9000 }
-                ${SubDomainName}.jpw3.me:8001 { reverse_proxy localhost:9001 }
-                ${SubDomainName}.jpw3.me:8002 { reverse_proxy localhost:9002 }
-                ${SubDomainName}.jpw3.me:8003 { reverse_proxy localhost:9003 }
-                ${SubDomainName}.jpw3.me:8004 { reverse_proxy localhost:9004 }
-                ${SubDomainName}.jpw3.me:8005 { reverse_proxy localhost:9005 }
-                ${SubDomainName}.jpw3.me:8006 { reverse_proxy localhost:9006 }
-                ${SubDomainName}.jpw3.me:8007 { reverse_proxy localhost:9007 }
-                ${SubDomainName}.jpw3.me:8008 { reverse_proxy localhost:9008 }
+                ${SubDomainPrefix}.nip.io:8000 { 
+                  reverse_proxy localhost:9000 
+                }
+                ${SubDomainPrefix}.nip.io:8001 { 
+                  reverse_proxy localhost:9001 
+                }
+                ${SubDomainPrefix}.nip.io:8002 { 
+                  reverse_proxy localhost:9002 
+                }
+                ${SubDomainPrefix}.nip.io:8003 { 
+                  reverse_proxy localhost:9003 
+                }
+                ${SubDomainPrefix}.nip.io:8004 { 
+                  reverse_proxy localhost:9004 
+                }
+                ${SubDomainPrefix}.nip.io:8005 { 
+                  reverse_proxy localhost:9005 
+                }
+                ${SubDomainPrefix}.nip.io:8006 { 
+                  reverse_proxy localhost:9006 
+                }
+                ${SubDomainPrefix}.nip.io:8007 { 
+                  reverse_proxy localhost:9007 
+                }
+                ${SubDomainPrefix}.nip.io:8008 { 
+                  reverse_proxy localhost:9008 
+                }
               mode: '000644'
+              owner: root
+              group: root
+            /opt/caddy/update-dns.sh:
+              content: !Sub |
+                #! /bin/bash
+                PUBLICIP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
+                sed -i "s/${SubDomainPrefix}/${SubDomainPrefix}-$PUBLICIP/g" /etc/caddy/Caddyfile
+              mode: '000744'
               owner: root
               group: root
             /etc/systemd/system/caddy.service:
@@ -188,10 +214,17 @@ Resources:
               owner: root
               group: root
           commands:
-            install:
+            install-step1:
               command: "cp caddy /usr/bin/"
               cwd: "/opt/caddy"
-              test: "test -e /usr/bin/caddy"
+              test: "test ! -e /usr/bin/caddy"
+            install-step2:
+              command: "mkdir -p /var/lib/caddy"
+              test: "test ! -e /var/lib/caddy"
+            install-step3:
+              command: "chown caddy /var/lib/caddy"
+            install-step4:
+              command: "bash /opt/caddy/update-dns.sh"
         StartApplication:
           commands:
             build:
@@ -255,7 +288,7 @@ Resources:
 
     CreationPolicy:
       ResourceSignal:
-        Timeout: PT55M
+        Timeout: PT50M
   WebServerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -277,16 +310,7 @@ Resources:
           FromPort: '9000'
           ToPort: '9100'
           CidrIp: 0.0.0.0/0
-  DNSRecord:
-    Type: AWS::Route53::RecordSet
-    Properties:
-      HostedZoneName: jpw3.me.
-      Name: !Sub ${SubDomainName}.jpw3.me.
-      Type: A
-      TTL: '900'
-      ResourceRecords:
-      - !GetAtt WebServerInstance.PublicIp
 Outputs:
   PublicDomainName:
     Description: Domain name for newly created coder stack
-    Value: !GetAtt WebServerInstance.PublicDnsName
+    Value: !Sub https://${SubDomainPrefix}-${WebServerInstance.PublicIp}.nip.io:8000
