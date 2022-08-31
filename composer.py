@@ -37,7 +37,8 @@ def main():
         help="Number of instances to create (default=1)",
     )
     args = parser.parse_args()
-    M2_CACHE_PATH.mkdir(exist_ok=True)
+
+    M2_CACHE_PATH.mkdir(exist_ok=True, parents=True)
 
     for i in range(1, args.num_teams + 1):
         service_name = f"coder-instance-{i}"

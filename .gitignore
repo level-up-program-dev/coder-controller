@@ -6,3 +6,6 @@ stack-id.json
 Caddyfile
 .vscode
 .dccache
+/volumes
+*stack-id.json
+docker-compose.json
