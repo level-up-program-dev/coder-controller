@@ -233,17 +233,12 @@ Resources:
             build:
               command: "make compose"
               env: 
-                CODER_INSTANCE_COUNT: !Ref EnvironmentCount
+                - CODER_INSTANCE_COUNT: !Ref EnvironmentCount
+                - TEAM_REPO: !Ref GitHubRepoURL
               cwd: "/opt/coder/coder-controller-main"
               test: "test ! -e /opt/coder/coder-controller-main/docker-compose.json"
             start:
               command: "make start"
-              cwd: "/opt/coder/coder-controller-main"
-            clone:
-              command: "make clone"
-              env: 
-                - CODER_INSTANCE_COUNT: !Ref EnvironmentCount
-                - TEAM_REPO: !Ref GitHubRepoURL
               cwd: "/opt/coder/coder-controller-main"
           services:
             sysvinit:
