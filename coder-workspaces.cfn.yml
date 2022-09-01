@@ -43,15 +43,6 @@ Mappings:
       Arch: HVM64
     t3.2xlarge:
       Arch: HVM64
-  AWSInstanceType2NATArch:
-    t2.micro:
-      Arch: NATHVM64
-    t3.large:
-      Arch: NATHVM64
-    t3.xlarge:
-      Arch: NATHVM64
-    t3.2xlarge:
-      Arch: NATHVM64
   AWSRegionArch2AMI:
     us-east-1:
       HVM64: ami-0c02fb55956c7d316
@@ -233,17 +224,16 @@ Resources:
             build:
               command: "make compose"
               env: 
-                TEAM_REPO: !Ref GitHubRepoURL
                 CODER_INSTANCE_COUNT: !Ref EnvironmentCount 
               cwd: "/opt/coder/coder-controller-main"
               test: "test ! -e /opt/coder/coder-controller-main/docker-compose.json"
+            start:
+              command: "make start"
+              cwd: "/opt/coder/coder-controller-main"
             clone: 
               command: "make clone"
               env: 
                 TEAM_REPO: !Ref GitHubRepoURL
-              cwd: "/opt/coder/coder-controller-main"
-            start:
-              command: "make start"
               cwd: "/opt/coder/coder-controller-main"
           services:
             sysvinit:

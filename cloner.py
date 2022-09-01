@@ -1,9 +1,8 @@
 import os
-import sys
 import argparse
 from pathlib import Path
 
-VOLUME_BASE_PATH = Path("/opt/coder/coder-controller-main/volumes/")
+VOLUME_BASE_PATH = Path("./volumes/")
 
 
 def main():
@@ -18,25 +17,17 @@ def main():
         required=True,
         help="Repository to clone",
     )
-    parser.add_argument(
-        "-n",
-        type=int,
-        action="store",
-        default=1,
-        dest="num_teams",
-        help="Number of instances to clone into (default=1)",
-    )
+
     args = parser.parse_args()
 
     clone = f"git clone {args.repo}"
+    service_name = "coder-instance-*"
     
-    for i in range(1, args.num_teams + 1):
-        service_name = f"coder-instance-{i}"
-        volume_path = VOLUME_BASE_PATH.joinpath(service_name).absolute()
-
+    file_list = VOLUME_BASE_PATH.glob(service_name)
+    for team_dir in file_list:
         # Specifying the path where the cloned project needs to be copied
-        os.chdir(volume_path)
-        os.system(clone)  # Cloning
+        full_dir_clone = f"{clone} {team_dir}"
+        os.system(full_dir_clone)  # Cloning
 
 if __name__ == "__main__":
     main()

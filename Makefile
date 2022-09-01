@@ -22,7 +22,7 @@ compose:
 # cd ./volumes/coder-instance-$$team ; \
 # git clone $(TEAM_REPO) 
 clone:	
-	python3 cloner.py -r $(TEAM_REPO) -n 2
+	python3 cloner.py -r $(TEAM_REPO)
 # python3 cloner.py -r $(TEAM_REPO) -n $(CODER_INSTANCE_COUNT)
 
 
