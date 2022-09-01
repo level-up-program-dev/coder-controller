@@ -22,12 +22,13 @@ def main():
 
     clone = f"git clone {args.repo}"
     service_name = "coder-instance-*"
-    
+
     file_list = VOLUME_BASE_PATH.glob(service_name)
     for team_dir in file_list:
         # Specifying the path where the cloned project needs to be copied
         full_dir_clone = f"{clone} {team_dir}"
         os.system(full_dir_clone)  # Cloning
+
 
 if __name__ == "__main__":
     main()
