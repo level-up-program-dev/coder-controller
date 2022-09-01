@@ -233,9 +233,15 @@ Resources:
             build:
               command: "make compose"
               env: 
-                CODER_INSTANCE_COUNT: !Ref EnvironmentCount
+                CODER_INSTANCE_COUNT: !Ref EnvironmentCount 
               cwd: "/opt/coder/coder-controller-main"
               test: "test ! -e /opt/coder/coder-controller-main/docker-compose.json"
+            clone: 
+              command: "make clone"
+                env: 
+                  TEAM_REPO: !Ref GitHubRepoURL
+                cwd: "/opt/coder/coder-controller-main"
+                test: "test ! -e /opt/coder/coder-controller-main/docker-compose.json"
             start:
               command: "make start"
               cwd: "/opt/coder/coder-controller-main"

@@ -22,7 +22,7 @@ compose:
 # cd ./volumes/coder-instance-$$team ; \
 # git clone $(TEAM_REPO) 
 clone:	
-	python3 cloner.py -r $(TEAM_REPO) -n $(CODER_INSTANCE_COUNT)
+	python3 cloner.py -r $(TEAM_REPO) -n 2
 
 start:
 	docker-compose -f docker-compose.json up -d --remove-orphans
