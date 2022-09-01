@@ -30,6 +30,13 @@ Parameters:
     Description: Subdomain prefix to use for DNS record
     Type: String
     Default: coder
+  DNSProvider:
+    Description: Service to generate the DNS name
+    Type: String
+    Default: sslip.io
+    AllowedValues:
+      - sslip.io
+      - nip.io
   GitHubRepoURL:
     Description: GitHub Repository to clone
     Type: String
@@ -165,31 +172,31 @@ Resources:
           files:
             /etc/caddy/Caddyfile:
               content: !Sub |
-                ${SubDomainPrefix}.nip.io:8000 { 
+                ${SubDomainPrefix}.${DNSProvider}:8000 { 
                   reverse_proxy localhost:9000 
                 }
-                ${SubDomainPrefix}.nip.io:8001 { 
+                ${SubDomainPrefix}.${DNSProvider}:8001 { 
                   reverse_proxy localhost:9001 
                 }
-                ${SubDomainPrefix}.nip.io:8002 { 
+                ${SubDomainPrefix}.${DNSProvider}:8002 { 
                   reverse_proxy localhost:9002 
                 }
-                ${SubDomainPrefix}.nip.io:8003 { 
+                ${SubDomainPrefix}.${DNSProvider}:8003 { 
                   reverse_proxy localhost:9003 
                 }
-                ${SubDomainPrefix}.nip.io:8004 { 
+                ${SubDomainPrefix}.${DNSProvider}:8004 { 
                   reverse_proxy localhost:9004 
                 }
-                ${SubDomainPrefix}.nip.io:8005 { 
+                ${SubDomainPrefix}.${DNSProvider}:8005 { 
                   reverse_proxy localhost:9005 
                 }
-                ${SubDomainPrefix}.nip.io:8006 { 
+                ${SubDomainPrefix}.${DNSProvider}:8006 { 
                   reverse_proxy localhost:9006 
                 }
-                ${SubDomainPrefix}.nip.io:8007 { 
+                ${SubDomainPrefix}.${DNSProvider}:8007 { 
                   reverse_proxy localhost:9007 
                 }
-                ${SubDomainPrefix}.nip.io:8008 { 
+                ${SubDomainPrefix}.${DNSProvider}:8008 { 
                   reverse_proxy localhost:9008 
                 }
               mode: '000644'
@@ -315,4 +322,4 @@ Resources:
 Outputs:
   PublicDomainName:
     Description: Domain name for newly created coder stack
-    Value: !Sub https://${SubDomainPrefix}-${WebServerInstance.PublicIp}.nip.io:8000
+    Value: !Sub https://${SubDomainPrefix}-${WebServerInstance.PublicIp}.${DNSProvider}:8000
