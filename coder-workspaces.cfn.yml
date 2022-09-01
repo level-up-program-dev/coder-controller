@@ -69,6 +69,7 @@ Resources:
             - 
               ConfigSet: "Configure"
             - "StartApplication"
+            - "CloneRepos"
           default:
             - 
               ConfigSet: "Start"
@@ -230,16 +231,18 @@ Resources:
             start:
               command: "make start"
               cwd: "/opt/coder/coder-controller-main"
-            clone: 
-              command: "make clone"
-              env: 
-                TEAM_REPO: !Ref GitHubRepoURL
-              cwd: "/opt/coder/coder-controller-main"
           services:
             sysvinit:
               caddy:
                 enabled: 'true'
                 ensureRunning: 'true'
+        CloneRepos:
+          commands:
+            clone: 
+              command: "make clone"
+              env: 
+                TEAM_REPO: !Ref GitHubRepoURL
+              cwd: "/opt/coder/coder-controller-main"
     Properties:
       ImageId: !FindInMap 
         - AWSRegionArch2AMI
