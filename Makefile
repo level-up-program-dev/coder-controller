@@ -14,10 +14,14 @@ bootstrap:
 	python3 -m pip install docker-compose
 
 # set CODER_INSTANCE_COUNT= to the number of container to generate
-# set TEAM_REPO to the git url for the code to clone
 compose:
 	docker pull ghcr.io/jpwhite3/polyglot-code-server:latest
 	python3 composer.py -n $(CODER_INSTANCE_COUNT)
+
+# set TEAM_REPO to the git url for the code to clone
+# cd ./volumes/coder-instance-$$team ; \
+# git clone $(TEAM_REPO) 
+clone:	
 	python3 cloner.py -r $(TEAM_REPO) -n $(CODER_INSTANCE_COUNT)
 
 start:
