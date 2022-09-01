@@ -1,14 +1,18 @@
+# set TEAM_NAME to the team name provided to create-repos
 env:
-	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t3.xlarge > stack-id.json
+	aws cloudformation create-stack --stack-name $(TEAM_NAME) --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=GitHubRepoURL,ParameterValue=https://github.com/level-up-program/team-$(TEAM_NAME).git ParameterKey=InstanceType,ParameterValue=t3.xlarge > stack-id-$(TEAM_NAME).json
 
 env-test:
-	aws cloudformation create-stack --stack-name coder-stack --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=InstanceType,ParameterValue=t2.micro ParameterKey=EnvironmentCount,ParameterValue=2 > test-stack-id.json
+	aws cloudformation create-stack --stack-name $(TEAM_NAME) --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=GitHubRepoURL,ParameterValue=https://github.com/level-up-program/team-$(TEAM_NAME).git ParameterKey=InstanceType,ParameterValue=t2.micro ParameterKey=EnvironmentCount,ParameterValue=2 > test-stack-id-$(TEAM_NAME).json
 
 env-list:
-	aws cloudformation describe-stacks --stack-name coder-stack
+	aws cloudformation describe-stacks --stack-name $(TEAM_NAME)
+
+env-get-url:
+	aws cloudformation describe-stacks --query 'Stacks[?StackName==`$(TEAM_NAME)`][].Outputs[?OutputKey==`PublicDomainName`].OutputValue' --output text > $(TEAM_NAME).URL
 
 env-delete:
-	aws cloudformation delete-stack --stack-name coder-stack
+	aws cloudformation delete-stack --stack-name $(TEAM_NAME)
 
 bootstrap:
 	python3 -m pip install docker-compose
@@ -19,12 +23,8 @@ compose:
 	python3 composer.py -n $(CODER_INSTANCE_COUNT)
 
 # set TEAM_REPO to the git url for the code to clone
-# cd ./volumes/coder-instance-$$team ; \
-# git clone $(TEAM_REPO) 
 clone:	
 	python3 cloner.py -r $(TEAM_REPO)
-# python3 cloner.py -r $(TEAM_REPO) -n $(CODER_INSTANCE_COUNT)
-
 
 start:
 	docker-compose -f docker-compose.json up -d --remove-orphans

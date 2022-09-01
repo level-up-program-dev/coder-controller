@@ -9,3 +9,5 @@ Caddyfile
 /volumes
 *stack-id.json
 docker-compose.json
+/test-stack-id-erins-java-test.json
+*.URL
