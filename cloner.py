@@ -3,7 +3,7 @@ import sys
 import argparse
 from pathlib import Path
 
-VOLUME_BASE_PATH = Path("./volumes/")
+VOLUME_BASE_PATH = Path("/opt/coder/coder-controller-main/volumes/")
 
 
 def main():
