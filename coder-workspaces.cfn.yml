@@ -206,7 +206,7 @@ Resources:
               content: !Sub |
                 #! /bin/bash
                 PUBLICIP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
-                sed -i "s/${SubDomainPrefix}/${SubDomainPrefix}-$PUBLICIP/g" /etc/caddy/Caddyfile
+                sed -i "s/^${SubDomainPrefix}.*:/${SubDomainPrefix}-$PUBLICIP.${DNSProvider}:/g" /etc/caddy/Caddyfile
               mode: '000744'
               owner: root
               group: root
@@ -227,6 +227,12 @@ Resources:
               command: "chown caddy /var/lib/caddy"
             install-step4:
               command: "bash /opt/caddy/update-dns.sh"
+            install-step5:
+              command: "echo '\nbash /opt/caddy/update-dns.sh' >> /etc/rc.local"
+            install-step6:
+              command: "echo '\nsystemctl restart caddy' >> /etc/rc.local"
+            install-step7:
+              command: "chmod +x /etc/rc.d/rc.local"
         StartApplication:
           commands:
             build:
