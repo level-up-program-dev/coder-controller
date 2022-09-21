@@ -31,3 +31,10 @@ will stop all running coder containers
 
 - 8000 - Connect to portainer instance
 - 8000+Instance# (ie 9001 for Instance #1) - Connect to coder instance
+
+# Restarting Caddy
+
+```bash
+systemctl restart caddy    # To restart service
+systemctl status caddy -l  # To see status
+```
