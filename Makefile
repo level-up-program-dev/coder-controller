@@ -4,7 +4,8 @@ env:
 	aws cloudformation create-stack --stack-name $(TEAM_NAME) --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=EnvironmentCount,ParameterValue=$(CODER_INSTANCE_COUNT) ParameterKey=GitHubRepoURL,ParameterValue=https://github.com/level-up-program/team-$(TEAM_NAME).git ParameterKey=InstanceType,ParameterValue=t3.xlarge  > stack-id-$(TEAM_NAME).json
 
 env-test:
-	aws cloudformation create-stack --stack-name coder-test --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=GitHubRepoURL,ParameterValue=https://github.com/level-up-program/.github.git ParameterKey=InstanceType,ParameterValue=t2.micro ParameterKey=EnvironmentCount,ParameterValue=2 > test-stack-id.json
+	echo $(DOMAIN_NAME)
+	aws cloudformation create-stack --stack-name coder-test --template-body file://coder-workspaces.cfn.yml --parameters ParameterKey=GitHubRepoURL,ParameterValue=https://github.com/level-up-program/.github.git ParameterKey=InstanceType,ParameterValue=t2.micro ParameterKey=EnvironmentCount,ParameterValue=2 ParameterKey=DomainName,ParameterValue=$(DOMAIN_NAME) > test-stack-id.json
 
 env-test-delete:
 	aws cloudformation delete-stack --stack-name coder-test

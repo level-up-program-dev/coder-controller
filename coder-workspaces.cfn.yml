@@ -26,17 +26,14 @@ Parameters:
     MaxValue: 8
     MinValue: 1
     ConstraintDescription: number between 1 - 8
-  SubDomainPrefix:
+  DomainName:
+    Description: Primary domain name to use for DNS record (make.fail, jpw3.me, etc)
+    Type: String
+    Default: coder
+  SubDomainName:
     Description: Subdomain prefix to use for DNS record
     Type: String
     Default: coder
-  DNSProvider:
-    Description: Service to generate the DNS name
-    Type: String
-    Default: sslip.io
-    AllowedValues:
-      - sslip.io
-      - nip.io
   GitHubRepoURL:
     Description: GitHub Repository to clone
     Type: String
@@ -172,42 +169,34 @@ Resources:
           files:
             /etc/caddy/Caddyfile:
               content: !Sub |
-                ${SubDomainPrefix}.${DNSProvider}:8000 { 
+                ${SubDomainName}.${DomainName}:8000 { 
                   reverse_proxy localhost:9000 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8001 { 
+                ${SubDomainName}.${DomainName}:8001 { 
                   reverse_proxy localhost:9001 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8002 { 
+                ${SubDomainName}.${DomainName}:8002 { 
                   reverse_proxy localhost:9002 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8003 { 
+                ${SubDomainName}.${DomainName}:8003 { 
                   reverse_proxy localhost:9003 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8004 { 
+                ${SubDomainName}.${DomainName}:8004 { 
                   reverse_proxy localhost:9004 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8005 { 
+                ${SubDomainName}.${DomainName}:8005 { 
                   reverse_proxy localhost:9005 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8006 { 
+                ${SubDomainName}.${DomainName}:8006 { 
                   reverse_proxy localhost:9006 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8007 { 
+                ${SubDomainName}.${DomainName}:8007 { 
                   reverse_proxy localhost:9007 
                 }
-                ${SubDomainPrefix}.${DNSProvider}:8008 { 
+                ${SubDomainName}.${DomainName}:8008 { 
                   reverse_proxy localhost:9008 
                 }
               mode: '000644'
-              owner: root
-              group: root
-            /opt/caddy/update-dns.sh:
-              content: !Sub |
-                #! /bin/bash
-                PUBLICIP=`curl -s http://169.254.169.254/latest/meta-data/public-ipv4`
-                sed -i "s/^${SubDomainPrefix}.*:/${SubDomainPrefix}-$PUBLICIP.${DNSProvider}:/g" /etc/caddy/Caddyfile
-              mode: '000744'
               owner: root
               group: root
             /etc/systemd/system/caddy.service:
@@ -226,12 +215,8 @@ Resources:
             install-step3:
               command: "chown caddy /var/lib/caddy"
             install-step4:
-              command: "bash /opt/caddy/update-dns.sh"
+              command: "echo '\nsystemctl start caddy' >> /etc/rc.local"
             install-step5:
-              command: "echo '\nbash /opt/caddy/update-dns.sh' >> /etc/rc.local"
-            install-step6:
-              command: "echo '\nsystemctl restart caddy' >> /etc/rc.local"
-            install-step7:
               command: "chmod +x /etc/rc.d/rc.local"
         StartApplication:
           commands:
@@ -325,7 +310,16 @@ Resources:
           FromPort: '9000'
           ToPort: '9100'
           CidrIp: 0.0.0.0/0
+  DNSRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      HostedZoneName: !Sub ${DomainName}.
+      Name: !Sub ${SubDomainName}.${DomainName}.
+      Type: A
+      TTL: '900'
+      ResourceRecords:
+      - !GetAtt WebServerInstance.PublicIp
 Outputs:
   PublicDomainName:
     Description: Domain name for newly created coder stack
-    Value: !Sub https://${SubDomainPrefix}-${WebServerInstance.PublicIp}.${DNSProvider}:8000
+    Value: !Sub https://${SubDomainName}.${DomainName}:8000
