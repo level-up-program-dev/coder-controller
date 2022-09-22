@@ -214,10 +214,6 @@ Resources:
               test: "test ! -e /var/lib/caddy"
             install-step3:
               command: "chown caddy /var/lib/caddy"
-            install-step4:
-              command: "echo '\nsystemctl start caddy' >> /etc/rc.local"
-            install-step5:
-              command: "chmod +x /etc/rc.d/rc.local"
         StartApplication:
           commands:
             build:
