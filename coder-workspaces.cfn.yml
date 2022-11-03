@@ -27,9 +27,9 @@ Parameters:
     MinValue: 1
     ConstraintDescription: number between 1 - 8
   DomainName:
-    Description: Primary domain name to use for DNS record (make.fail, jpw3.me, etc)
+    Description: Primary domain name to use for DNS record (levelup-program.com, etc.)
     Type: String
-    Default: coder
+    Default: levelup-program.com
   SubDomainName:
     Description: Subdomain prefix to use for DNS record
     Type: String
