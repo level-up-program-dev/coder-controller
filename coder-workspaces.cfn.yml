@@ -27,7 +27,7 @@ Parameters:
     MinValue: 1
     ConstraintDescription: number between 1 - 8
   DomainName:
-    Description: Primary domain name to use for DNS record (levelup-program.com, etc.)
+    Description: Primary domain name to use for DNS record (levelup-program.com)
     Type: String
     Default: levelup-program.com
   SubDomainName:
@@ -215,7 +215,7 @@ Resources:
             install-step3:
               command: "chown caddy /var/lib/caddy"
             install-step4:
-              command: "echo '\nsystemctl start caddy' >> /etc/rc.local"
+              command: "echo '\nsystemctl restart caddy' >> /etc/rc.local"
             install-step5:
               command: "chmod +x /etc/rc.d/rc.local"
         StartApplication:
@@ -242,6 +242,9 @@ Resources:
                 TEAM_REPO: !Ref GitHubRepoURL
               cwd: "/opt/coder/coder-controller-main"
     Properties:
+      Tags: 
+        - Key: "USECASE"
+          Value: "CODER"
       ImageId: !FindInMap 
         - AWSRegionArch2AMI
         - !Ref 'AWS::Region'
@@ -319,6 +322,24 @@ Resources:
       TTL: '900'
       ResourceRecords:
       - !GetAtt WebServerInstance.PublicIp
+  CaddyRestartCommand:
+    Type: AWS::SSM::Document
+    Properties:
+      Content:
+        schemaVersion: '2.2'
+        description: 'Run a Caddy restart on Linux instances.'
+        mainSteps:
+        - action: aws:runShellScript
+          name: runCommands
+          inputs:
+            timeoutSeconds: '60'
+            runCommand:
+            - "systemctl restart caddy"
+      DocumentFormat: YAML
+      DocumentType: Command
+      Name: restart-caddy-service
+      TargetType: /AWS::EC2::Instance
+
 Outputs:
   PublicDomainName:
     Description: Domain name for newly created coder stack
