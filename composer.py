@@ -46,7 +46,7 @@ def main():
         port = BASE_PORT + i
         BASE_SERVICES["services"][service_name] = {
             "container_name": service_name,
-            "image": "ghcr.io/jpwhite3/polyglot-code-server:latest",
+            "image": "ghcr.io/level-up-program-dev/levelup-coder-ide:latest",
             "restart": "unless-stopped",
             "working_dir": "/config/workspace",
             "ports": [f"{port}:{BASE_PORT}"],
